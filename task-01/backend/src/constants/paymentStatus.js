@@ -1,0 +1,5 @@
+export const PAYMENT_STATUS = {
+  SUCCESS: "SUCCESS",
+  FAILED: "FAILED",
+  TIMEOUT: "TIMEOUT",
+};
