@@ -35,40 +35,60 @@ function ProductDetails() {
 
 
   useEffect(() => {
+  let ignore = false;
 
-    loadProduct();
+  api
+    .get(`/products/${id}`)
 
-  }, [id]);
+    .then((response) => {
 
+      if (ignore) return;
 
-  const loadProduct =
-    async () => {
+      const data =
+        response.data?.data;
 
-      try {
-
-        const response =
-          await api.get(
-            `/products/${id}`
-          );
-
-        setProduct(
-          response.data.data
+      if (!data) {
+        throw new Error(
+          "Product not found"
         );
+      }
 
-      } catch (error) {
+      setProduct(data);
+    })
 
-        setMessage(
-          error.response?.data?.message ||
-          "Failed to load product"
-        );
+    .catch((error) => {
 
-      } finally {
+      if (ignore) return;
 
+      console.error(
+        "Load product error:",
+        error
+      );
+
+      setProduct(null);
+
+      setMessage(
+        error.response?.data?.message ||
+        "Failed to load product"
+      );
+    })
+
+    .finally(() => {
+
+      if (!ignore) {
         setLoading(false);
       }
-    };
+    });
 
 
+  return () => {
+    ignore = true;
+  };
+
+}, [id]);
+
+
+  
   const addToCart =
     async () => {
 

@@ -3,80 +3,109 @@ import {
   useState,
 } from "react";
 
-import api
-  from "../api/api.js";
+import api from "../api/api.js";
 
 import ProductCard
   from "../components/ProductCard.jsx";
 
 
 function Products() {
+  const [products, setProducts] =
+    useState([]);
 
-  const [
-    products,
-    setProducts
-  ] = useState([]);
+  const [search, setSearch] =
+    useState("");
 
-  const [
-    search,
-    setSearch
-  ] = useState("");
+  const [category, setCategory] =
+    useState("");
 
-  const [
-    category,
-    setCategory
-  ] = useState("");
+  const [minPrice, setMinPrice] =
+    useState("");
 
-  const [
-    minPrice,
-    setMinPrice
-  ] = useState("");
+  const [maxPrice, setMaxPrice] =
+    useState("");
 
-  const [
-    maxPrice,
-    setMaxPrice
-  ] = useState("");
+  const [loading, setLoading] =
+    useState(true);
 
-  const [
-    loading,
-    setLoading
-  ] = useState(false);
+  const [message, setMessage] =
+    useState("");
 
-  const [
-    message,
-    setMessage
-  ] = useState("");
+
+  // Initial load
+  useEffect(() => {
+    let ignore = false;
+
+    api
+      .get("/products")
+
+      .then((response) => {
+        if (ignore) return;
+
+        const data =
+          response.data?.data;
+
+        if (!Array.isArray(data)) {
+          throw new Error(
+            "Invalid product response"
+          );
+        }
+
+        setProducts(data);
+      })
+
+      .catch((error) => {
+        if (ignore) return;
+
+        console.error(
+          "Load products error:",
+          error
+        );
+
+        setProducts([]);
+
+        setMessage(
+          error.response?.data?.message ||
+          "Failed to load products"
+        );
+      })
+
+      .finally(() => {
+        if (!ignore) {
+          setLoading(false);
+        }
+      });
+
+
+    return () => {
+      ignore = true;
+    };
+  }, []);
 
 
   const loadProducts =
     async () => {
 
       try {
-
         setLoading(true);
         setMessage("");
 
-
         const params = {};
-
 
         if (search.trim()) {
           params.search =
             search.trim();
         }
 
-
         if (category) {
           params.category =
             category;
         }
 
-
         if (minPrice) {
           params.minPrice =
             minPrice;
         }
-
 
         if (maxPrice) {
           params.maxPrice =
@@ -87,16 +116,33 @@ function Products() {
         const response =
           await api.get(
             "/products",
-            { params }
+            {
+              params,
+            }
           );
 
 
-        setProducts(
-          response.data.data
-        );
+        const data =
+          response.data?.data;
 
+
+        if (!Array.isArray(data)) {
+          throw new Error(
+            "Invalid product response"
+          );
+        }
+
+
+        setProducts(data);
 
       } catch (error) {
+
+        console.error(
+          "Load products error:",
+          error
+        );
+
+        setProducts([]);
 
         setMessage(
           error.response?.data?.message ||
@@ -110,13 +156,6 @@ function Products() {
     };
 
 
-  useEffect(() => {
-
-    loadProducts();
-
-  }, []);
-
-
   const handleSearch =
     (event) => {
 
@@ -127,48 +166,65 @@ function Products() {
 
 
   const clearFilters =
-    () => {
+    async () => {
 
       setSearch("");
       setCategory("");
       setMinPrice("");
       setMaxPrice("");
 
+      try {
 
-      setTimeout(() => {
+        setLoading(true);
+        setMessage("");
 
-        api.get(
-          "/products"
-        )
-        .then((response) => {
-
-          setProducts(
-            response.data.data
+        const response =
+          await api.get(
+            "/products"
           );
 
-        });
 
-      }, 0);
+        const data =
+          response.data?.data;
+
+
+        if (!Array.isArray(data)) {
+          throw new Error(
+            "Invalid product response"
+          );
+        }
+
+
+        setProducts(data);
+
+      } catch (error) {
+
+        setProducts([]);
+
+        setMessage(
+          error.response?.data?.message ||
+          "Failed to load products"
+        );
+
+      } finally {
+
+        setLoading(false);
+      }
     };
 
 
   return (
-
     <div className="page">
 
       <div className="page-header">
-
         <div>
-          <h1>
-            Products
-          </h1>
+          <h1>Products</h1>
 
           <p>
-            Browse products and
-            add items to your cart.
+            Browse products and add
+            items to your cart.
           </p>
         </div>
-
       </div>
 
 
@@ -219,8 +275,8 @@ function Products() {
 
         <input
           type="number"
-          placeholder="Min Price"
           min="0"
+          placeholder="Min Price"
           value={minPrice}
           onChange={(event) =>
             setMinPrice(
@@ -232,8 +288,8 @@ function Products() {
 
         <input
           type="number"
-          placeholder="Max Price"
           min="0"
+          placeholder="Max Price"
           value={maxPrice}
           onChange={(event) =>
             setMaxPrice(
@@ -244,16 +300,16 @@ function Products() {
 
 
         <button
-          className="primary-btn"
           type="submit"
+          className="primary-btn"
         >
           Search
         </button>
 
 
         <button
-          className="secondary-btn"
           type="button"
+          className="secondary-btn"
           onClick={clearFilters}
         >
           Clear
@@ -263,9 +319,9 @@ function Products() {
 
 
       {message && (
-        <p className="message">
+        <div className="message">
           {message}
-        </p>
+        </div>
       )}
 
 
@@ -278,11 +334,9 @@ function Products() {
       ) : products.length === 0 ? (
 
         <div className="card">
-
           <p>
             No products found.
           </p>
-
         </div>
 
       ) : (
@@ -295,9 +349,6 @@ function Products() {
               <ProductCard
                 key={product.id}
                 product={product}
-                onCartUpdated={
-                  loadProducts
-                }
               />
 
             )

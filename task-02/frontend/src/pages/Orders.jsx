@@ -96,16 +96,58 @@ function Orders() {
   };
 
 
-  useEffect(() => {
+useEffect(() => {
+  let ignore = false;
 
-    loadOrders();
+  api
+    .get("/orders")
 
-  }, []);
+    .then((response) => {
+
+      if (ignore) return;
+
+      const data =
+        response.data?.data;
+
+      setOrders(
+        Array.isArray(data)
+          ? data
+          : []
+      );
+    })
+
+    .catch((error) => {
+
+      if (ignore) return;
+
+      console.error(
+        "Load orders error:",
+        error
+      );
+
+      setOrders([]);
+
+      setMessage(
+        error.response?.data?.message ||
+        "Failed to load order history"
+      );
+    })
+
+    .finally(() => {
+
+      if (!ignore) {
+        setLoading(false);
+      }
+    });
 
 
-  // -----------------------------
-  // Load order details
-  // -----------------------------
+  return () => {
+    ignore = true;
+  };
+
+}, []);
+
+
 
   const loadOrderDetails =
     async (orderId) => {

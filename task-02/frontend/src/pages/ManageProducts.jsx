@@ -105,17 +105,58 @@ function ManageProducts() {
     };
 
 
-  useEffect(() => {
+useEffect(() => {
+  let ignore = false;
 
-    loadProducts();
+  api
+    .get("/products")
 
-  }, []);
+    .then((response) => {
+
+      if (ignore) return;
+
+      const data =
+        response.data?.data;
+
+      setProducts(
+        Array.isArray(data)
+          ? data
+          : []
+      );
+    })
+
+    .catch((error) => {
+
+      if (ignore) return;
+
+      console.error(
+        "Admin products error:",
+        error
+      );
+
+      setProducts([]);
+
+      setMessageModal({
+        open: true,
+
+        title:
+          "Unable to Load Products",
+
+        message:
+          error.response?.data?.message ||
+          "Failed to load products",
+      });
+    });
 
 
-  // -------------------------
-  // Input changes
-  // -------------------------
+  return () => {
+    ignore = true;
+  };
 
+}, []);
+
+
+  
   const handleChange =
     (event) => {
 
@@ -135,9 +176,6 @@ function ManageProducts() {
     };
 
 
-  // -------------------------
-  // Reset form
-  // -------------------------
 
   const resetForm = () => {
 
@@ -160,10 +198,7 @@ function ManageProducts() {
   };
 
 
-  // -------------------------
-  // Create / Update
-  // -------------------------
-
+  
   const handleSubmit =
     async (event) => {
 
@@ -264,10 +299,7 @@ function ManageProducts() {
     };
 
 
-  // -------------------------
-  // Edit
-  // -------------------------
-
+ 
   const editProduct =
     (product) => {
 
@@ -303,10 +335,7 @@ function ManageProducts() {
     };
 
 
-  // -------------------------
-  // Delete
-  // -------------------------
-
+ 
   const deleteProduct =
     async (productId) => {
 
@@ -351,10 +380,7 @@ function ManageProducts() {
     };
 
 
-  // -------------------------
-  // UI
-  // -------------------------
-
+  
   return (
 
     <div className="page">
