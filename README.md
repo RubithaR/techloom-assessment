@@ -1,6 +1,8 @@
 # Techloom Technical Assessment
 
 This repository contains the two tasks completed for the Techloom technical assessment.
+GitHub Repository: 
+https://github.com/RubithaR/techloom-assessment
 
 ## Tasks
 
