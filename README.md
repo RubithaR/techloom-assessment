@@ -17,6 +17,8 @@ techloom-assessment/
 │   └── README.md
 ├── task-02/
 │   └── README.md
+│   ├── backend/
+│   ├── frontend/
 └── README.md
 ```
 
@@ -30,4 +32,13 @@ https://techloom-assessment-production-1611.up.railway.app
 
 Task 01 includes product and inventory management, cart handling, checkout, stock reservation, mock payments, order management, cancellation, and concurrency protection.
 
-Task 02 is documented separately in its own README.
+
+## Task 02 Deployment
+
+Frontend:
+https://techloom-assessment-17iq.vercel.app
+
+Backend:
+https://e-commercesystem-production-058f.up.railway.app
+
+Task 02 includes product browsing and filtering, product details, cart and checkout, mock payments, order history, refunds, stock restoration, and product administration.
