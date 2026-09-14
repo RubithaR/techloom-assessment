@@ -22,6 +22,7 @@ const app = express();
 
 const allowedOrigins = [
   "http://localhost:5173",
+  "https://techloom-assessment-17iq.vercel.app",
   process.env.FRONTEND_URL,
 ];
 
