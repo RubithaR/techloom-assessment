@@ -1,0 +1,8 @@
+export const ORDER_STATUS = {
+    PENDING: "PENDING",
+    RESERVED: "RESERVED",
+    PAID: "PAID",
+    FAILED: "FAILED",
+    CANCELLED: "CANCELLED",
+    EXPIRED: "EXPIRED",
+};

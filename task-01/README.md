@@ -212,6 +212,4 @@ The expected result is one successful checkout, one rejected checkout, and final
 
 ## Notes
 
-Environment files are not committed to the repository.
-
 The system uses PostgreSQL transactions for checkout, payment-related stock handling, reservation expiry, and cancellation to avoid inconsistent inventory or order state.
