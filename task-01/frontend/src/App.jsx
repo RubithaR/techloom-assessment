@@ -4,17 +4,10 @@ import {
   Route,
 } from "react-router-dom";
 
-import Products
-  from "./pages/Products.jsx";
-
-import Cart
-  from "./pages/Cart.jsx";
-
-import Checkout
-  from "./pages/Checkout.jsx";
-
-import Orders
-  from "./pages/Orders.jsx";
+import Products from "./pages/Products.jsx";
+import Cart from "./pages/Cart.jsx";
+import Checkout from "./pages/Checkout.jsx";
+import Orders from "./pages/Orders.jsx";
 
 
 

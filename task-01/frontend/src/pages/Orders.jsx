@@ -9,19 +9,16 @@ import OrderStatus from "../components/OrderStatus.jsx";
 
 function Orders() {
 
-  const [orders, setOrders] =
-    useState([]);
+  const [orders, setOrders] = useState([]);
 
   const [
     selectedOrder,
     setSelectedOrder
   ] = useState(null);
 
-  const [loading, setLoading] =
-    useState(true);
+  const [loading, setLoading] =  useState(true);
 
-  const [message, setMessage] =
-    useState("");
+  const [message, setMessage] = useState("");
 
 
   const loadOrders = async () => {

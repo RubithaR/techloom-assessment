@@ -14,15 +14,11 @@ import CartItem from "../components/CartItem.jsx";
 function Cart() {
 
   const navigate = useNavigate();
+  const [cart, setCart] = useState(null);
 
-  const [cart, setCart] =
-    useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const [loading, setLoading] =
-    useState(true);
-
-  const [message, setMessage] =
-    useState("");
+  const [message, setMessage] = useState("");
 
 
   const cartId =
@@ -34,16 +30,15 @@ function Cart() {
   const loadCart = async () => {
 
     if (!cartId) {
-
       setCart(null);
       setLoading(false);
+
 
       return;
     }
 
 
     try {
-
       const response =
         await api.get(
           `/carts/${cartId}`
@@ -92,25 +87,16 @@ function Cart() {
 
     loadCart();
 
-    // eslint-disable-next-line
   }, []);
 
 
-  const updateQuantity = async (
-    productId,
-    quantity
-  ) => {
-
+  const updateQuantity = async (productId,quantity) => {
     if (quantity < 1) {
       return;
     }
 
-
     try {
-
       setMessage("");
-
-
       await api.put(
         `/carts/${cartId}/items/${productId}`,
         {
@@ -121,14 +107,11 @@ function Cart() {
 
       await loadCart();
 
-
     } catch (error) {
-
       console.error(
         "Update quantity error:",
         error
       );
-
 
       setMessage(
         error.response?.data?.message ||
@@ -138,23 +121,15 @@ function Cart() {
   };
 
 
-  const removeItem = async (
-    productId
-  ) => {
-
+  const removeItem = async (productId) => {
     try {
-
       setMessage("");
-
-
       await api.delete(
         `/carts/${cartId}/items/${productId}`
       );
 
-
       await loadCart();
-
-
+      
     } catch (error) {
 
       console.error(

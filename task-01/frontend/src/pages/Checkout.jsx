@@ -13,33 +13,20 @@ import api from "../api/api.js";
 function Checkout() {
 
   const navigate = useNavigate();
+  const [cart, setCart] = useState(null);
 
-  const [cart, setCart] =
-    useState(null);
+  const [order, setOrder] =  useState(null);
 
-  const [order, setOrder] =
-    useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const [loading, setLoading] =
-    useState(true);
+  const [processing, setProcessing] =  useState(false);
 
-  const [processing, setProcessing] =
-    useState(false);
+  const [timeLeft, setTimeLeft] = useState(0);
 
-  const [timeLeft, setTimeLeft] =
-    useState(0);
-
-  const [message, setMessage] =
-    useState("");
+  const [message, setMessage] = useState("");
 
 
-  const cartId =
-    localStorage.getItem("cartId");
-
-
-  // --------------------------------
-  // Load cart before checkout
-  // --------------------------------
+  const cartId =localStorage.getItem("cartId");
 
   useEffect(() => {
 
@@ -82,10 +69,7 @@ function Checkout() {
   }, [cartId]);
 
 
-  // --------------------------------
-  // Countdown
-  // --------------------------------
-
+  
   useEffect(() => {
 
     if (
@@ -133,10 +117,6 @@ function Checkout() {
   }, [order]);
 
 
-  // --------------------------------
-  // Start checkout / reserve stock
-  // --------------------------------
-
   const startCheckout = async () => {
 
     if (!cartId) {
@@ -171,7 +151,6 @@ function Checkout() {
       );
 
 
-      // This cart has now been checked out.
       localStorage.removeItem(
         "cartId"
       );
@@ -199,10 +178,6 @@ function Checkout() {
     }
   };
 
-
-  // --------------------------------
-  // Mock payment
-  // --------------------------------
 
   const pay = async (outcome) => {
 
@@ -284,9 +259,7 @@ function Checkout() {
   };
 
 
-  // --------------------------------
   // Countdown format
-  // --------------------------------
 
   const formatTime = (
     totalSeconds
@@ -319,9 +292,7 @@ function Checkout() {
   }
 
 
-  // --------------------------------
   // After checkout
-  // --------------------------------
 
   if (order) {
 
@@ -471,10 +442,7 @@ function Checkout() {
   }
 
 
-  // --------------------------------
-  // Before checkout
-  // --------------------------------
-
+ 
   if (!cart) {
 
     return (
