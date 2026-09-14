@@ -1,41 +1,70 @@
 import {
-  NavLink
+  NavLink,
 } from "react-router-dom";
 
+
 function Navbar() {
+
   return (
-    <nav
-      style={{
-        padding: "15px",
-        borderBottom:
-          "1px solid #ccc",
-        marginBottom:
-          "20px",
-      }}
-    >
-      <strong>
+
+    <nav className="navbar">
+
+      <div className="navbar-brand">
+
         Techloom POS
-      </strong>
 
-      {" | "}
+      </div>
 
-      <NavLink to="/">
-        Products
-      </NavLink>
 
-      {" | "}
+      <div className="nav-section">
 
-      <NavLink to="/cart">
-        Cart
-      </NavLink>
+        <span className="nav-label">
+          POS
+        </span>
 
-      {" | "}
 
-      <NavLink to="/orders">
-        Orders
-      </NavLink>
+        <NavLink to="/">
+          Products
+        </NavLink>
+
+
+        <NavLink to="/cart">
+          Cart
+        </NavLink>
+
+
+        <NavLink to="/orders">
+          Orders
+        </NavLink>
+
+      </div>
+
+
+      <div className="nav-section">
+
+        <span className="nav-label">
+          Admin
+        </span>
+
+
+        <NavLink
+          to="/admin/products"
+        >
+          Manage Inventory
+        </NavLink>
+
+        <NavLink
+            to="/admin/concurrency-test"
+        >
+            Overselling Test
+        </NavLink>
+
+      </div>
+
     </nav>
+
   );
 }
+
 
 export default Navbar;

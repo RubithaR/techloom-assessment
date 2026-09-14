@@ -28,6 +28,14 @@ function Checkout() {
 
   const cartId =localStorage.getItem("cartId");
 
+  const goBack = () => {
+  if (order) {
+    navigate("/");
+  } else {
+    navigate("/cart");
+  }
+};
+
   useEffect(() => {
 
     const loadCart = async () => {
@@ -297,20 +305,24 @@ function Checkout() {
   if (order) {
 
     return (
-      <div
-        style={{
-          padding: "20px",
-        }}
-      >
+
+
+        
+      <div className="page">
+
+      <div className="checkout-header">
+        <button
+          className="secondary-btn"
+          onClick={() => navigate("/")}
+        >
+          ← Back to Products
+        </button>
+        
+      </div>
 
         <h1>
           Checkout
         </h1>
-
-
-        <h2>
-          Order #{order.id}
-        </h2>
 
 
         <p>
@@ -457,80 +469,60 @@ function Checkout() {
   }
 
 
-  return (
-    <div
-      style={{
-        padding: "20px",
-      }}
-    >
 
-      <h1>
-        Checkout
-      </h1>
+return (
+  <div className="page">
 
-
-      <h2>
-        Order Summary
-      </h2>
-
-
-      {cart.items.map(
-        (item) => (
-
-          <div
-            key={
-              item.product_id
-            }
-          >
-
-            <p>
-              {item.name}
-              {" × "}
-              {item.quantity}
-              {" = Rs. "}
-              {item.subtotal}
-            </p>
-
-          </div>
-
-        )
-      )}
-
-
-      <hr />
-
-
-      <h2>
-        Total: Rs.{" "}
-        {cart.total}
-      </h2>
-
-
+    <div className="checkout-header">
       <button
-        disabled={
-          processing ||
-          cart.items.length === 0
-        }
-        onClick={
-          startCheckout
-        }
+        className="secondary-btn"
+        onClick={goBack}
       >
-
-        {processing
-          ? "Processing..."
-          : "Reserve Stock & Checkout"}
-
+        ← Back to Cart
       </button>
-
-
-      {message && (
-        <p>
-          {message}
-        </p>
-      )}
-
     </div>
-  );
+
+    <h1>Checkout</h1>
+
+    <h2>Order Summary</h2>
+
+    {cart.items.map((item) => (
+      <div key={item.product_id}>
+        <p>
+          {item.name}
+          {" × "}
+          {item.quantity}
+          {" = Rs. "}
+          {item.subtotal}
+        </p>
+      </div>
+    ))}
+
+    <hr />
+
+    <h2>
+      Total: Rs. {cart.total}
+    </h2>
+
+    <button
+      disabled={
+        processing ||
+        cart.items.length === 0
+      }
+      onClick={startCheckout}
+    >
+      {processing
+        ? "Processing..."
+        : "Reserve Stock & Checkout"}
+    </button>
+
+    {message && (
+      <p>{message}</p>
+    )}
+
+  </div>
+);
+
 }
 
 

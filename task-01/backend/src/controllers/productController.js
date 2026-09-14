@@ -124,7 +124,8 @@ export const deleteProduct = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const product = await productService.deleteProduct(id);
+    const product =
+      await productService.deleteProduct(id);
 
     if (!product) {
       return res.status(404).json({
@@ -133,18 +134,32 @@ export const deleteProduct = async (req, res) => {
       });
     }
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "Product deleted successfully",
       data: product,
     });
 
   } catch (error) {
-    console.error(error);
 
-    res.status(500).json({
+    console.error(
+      "Delete product error:",
+      error
+    );
+
+    // PostgreSQL foreign-key violation
+    if (error.code === "23503") {
+      return res.status(409).json({
+        success: false,
+        message:
+          "This product cannot be deleted because it is already used in a cart or order. Historical transaction data must be preserved.",
+      });
+    }
+
+    return res.status(500).json({
       success: false,
-      message: "Failed to delete product",
+      message:
+        "Failed to delete product",
     });
   }
 };

@@ -8,59 +8,48 @@ import OrderStatus from "../components/OrderStatus.jsx";
 
 
 function Orders() {
-
-  const [orders, setOrders] = useState([]);
+  const [orders, setOrders] =
+    useState([]);
 
   const [
     selectedOrder,
     setSelectedOrder
   ] = useState(null);
 
-  const [loading, setLoading] =  useState(true);
+  const [loading, setLoading] =
+    useState(true);
 
-  const [message, setMessage] = useState("");
+  const [message, setMessage] =
+    useState("");
 
 
   const loadOrders = async () => {
-
     try {
-
       const response =
-        await api.get(
-          "/orders"
-        );
-
+        await api.get("/orders");
 
       setOrders(
         response.data.data
       );
 
-
     } catch (error) {
-
       console.error(
         "Load orders error:",
         error
       );
 
-
       setMessage(
         "Failed to load orders"
       );
 
-
     } finally {
-
       setLoading(false);
-
     }
   };
 
 
   useEffect(() => {
-
     loadOrders();
-
   }, []);
 
 
@@ -68,28 +57,32 @@ function Orders() {
     async (orderId) => {
 
       try {
-
         setMessage("");
 
+        // If same order is already open,
+        // clicking again will close it.
+        if (
+          selectedOrder?.id ===
+          orderId
+        ) {
+          setSelectedOrder(null);
+          return;
+        }
 
         const response =
           await api.get(
             `/orders/${orderId}`
           );
 
-
         setSelectedOrder(
           response.data.data
         );
 
-
       } catch (error) {
-
         console.error(
           "Order details error:",
           error
         );
-
 
         setMessage(
           error.response?.data?.message ||
@@ -104,52 +97,41 @@ function Orders() {
 
       const confirmed =
         window.confirm(
-          `Cancel Order #${orderId}?`
+          "Are you sure you want to cancel this order?"
         );
-
 
       if (!confirmed) {
         return;
       }
 
-
       try {
-
         setMessage("");
-
 
         const response =
           await api.post(
             `/orders/${orderId}/cancel`
           );
 
-
         setMessage(
           response.data.message
         );
 
-
         await loadOrders();
-
 
         if (
           selectedOrder?.id ===
           orderId
         ) {
-
           await loadOrderDetails(
             orderId
           );
         }
 
-
       } catch (error) {
-
         console.error(
           "Cancel order error:",
           error
         );
-
 
         setMessage(
           error.response?.data?.message ||
@@ -162,7 +144,6 @@ function Orders() {
   const canCancel = (
     status
   ) => {
-
     return (
       status === "RESERVED" ||
       status === "PAID"
@@ -173,11 +154,9 @@ function Orders() {
   const formatDate = (
     date
   ) => {
-
     if (!date) {
       return "-";
     }
-
 
     return new Date(
       date
@@ -198,58 +177,44 @@ function Orders() {
 
 
   if (loading) {
-
     return (
-
       <div className="page">
-
         <h2>
           Loading orders...
         </h2>
-
       </div>
-
     );
   }
 
 
   return (
-
     <div className="page">
 
       <div className="page-header">
-
         <div>
-
           <h1>Orders</h1>
 
           <p>
             View and manage
             POS orders.
           </p>
-
         </div>
-
       </div>
 
 
       {message && (
-
         <div className="message">
           {message}
         </div>
-
       )}
 
 
       {orders.length === 0 ? (
 
         <div className="card">
-
           <p>
             No orders found.
           </p>
-
         </div>
 
       ) : (
@@ -267,18 +232,15 @@ function Orders() {
                 <div className="order-header">
 
                   <div>
-
                     <h3>
                       Order #{order.id}
                     </h3>
-
 
                     <p>
                       {formatDate(
                         order.created_at
                       )}
                     </p>
-
                   </div>
 
 
@@ -292,8 +254,7 @@ function Orders() {
 
 
                 <p>
-                  Total:
-                  {" "}
+                  Total:{" "}
                   <strong>
                     Rs.{" "}
                     {order.total_amount}
@@ -302,8 +263,7 @@ function Orders() {
 
 
                 <p>
-                  Stock Released:
-                  {" "}
+                  Stock Released:{" "}
                   {order.stock_released
                     ? "Yes"
                     : "No"}
@@ -318,7 +278,10 @@ function Orders() {
                     )
                   }
                 >
-                  View Details
+                  {selectedOrder?.id ===
+                  order.id
+                    ? "Hide Details"
+                    : "View Details"}
                 </button>
 
 
@@ -342,6 +305,168 @@ function Orders() {
 
                 )}
 
+
+                {/* DETAILS SHOW DIRECTLY BELOW THIS ORDER */}
+
+                {selectedOrder?.id ===
+                  order.id && (
+
+                  <div className="order-details-inline">
+
+                    <div className="order-header">
+
+                      <h3>
+                        Order Details
+                      </h3>
+
+                      <OrderStatus
+                        status={
+                          selectedOrder.status
+                        }
+                      />
+
+                    </div>
+
+
+                    <p>
+                      Total:{" "}
+                      <strong>
+                        Rs.{" "}
+                        {
+                          selectedOrder
+                            .total_amount
+                        }
+                      </strong>
+                    </p>
+
+
+                    <p>
+                      Created:{" "}
+                      {formatDate(
+                        selectedOrder
+                          .created_at
+                      )}
+                    </p>
+
+
+                    {selectedOrder
+                      .reservation_expires_at && (
+
+                      <p>
+                        Reservation Expiry:{" "}
+                        {formatDate(
+                          selectedOrder
+                            .reservation_expires_at
+                        )}
+                      </p>
+
+                    )}
+
+
+                    <h4>
+                      Order Items
+                    </h4>
+
+
+                    {selectedOrder
+                      .items
+                      ?.map(
+                        (item) => (
+
+                          <div
+                            key={
+                              item.product_id
+                            }
+                            className="order-item"
+                          >
+
+                            <strong>
+                              {
+                                item.product_name
+                              }
+                            </strong>
+
+
+                            <span>
+                              Qty:{" "}
+                              {item.quantity}
+                            </span>
+
+
+                            <span>
+                              Rs.{" "}
+                              {item.subtotal}
+                            </span>
+
+                          </div>
+
+                        )
+                      )}
+
+
+                    <h4>
+                      Payment
+                    </h4>
+
+
+                    {selectedOrder
+                      .payment ? (
+
+                      <div className="payment-info">
+
+                        <p>
+                          Status:{" "}
+                          <strong>
+                            {
+                              selectedOrder
+                                .payment
+                                .status
+                            }
+                          </strong>
+                        </p>
+
+
+                        <p>
+                          Amount: Rs.{" "}
+                          {
+                            selectedOrder
+                              .payment
+                              .amount
+                          }
+                        </p>
+
+                      </div>
+
+                    ) : (
+
+                      <p>
+                        No payment recorded.
+                      </p>
+
+                    )}
+
+
+                    {canCancel(
+                      selectedOrder.status
+                    ) && (
+
+                      <button
+                        className="danger-btn"
+                        onClick={() =>
+                          cancelOrder(
+                            selectedOrder.id
+                          )
+                        }
+                      >
+                        Cancel Order
+                      </button>
+
+                    )}
+
+                  </div>
+
+                )}
+
               </div>
 
             )
@@ -351,173 +476,7 @@ function Orders() {
 
       )}
 
-
-      {selectedOrder && (
-
-        <div className="order-details">
-
-          <div className="order-header">
-
-            <h2>
-              Order #
-              {selectedOrder.id}
-            </h2>
-
-
-            <OrderStatus
-              status={
-                selectedOrder.status
-              }
-            />
-
-          </div>
-
-
-          <p>
-            Total:
-            {" "}
-            <strong>
-              Rs.{" "}
-              {
-                selectedOrder
-                  .total_amount
-              }
-            </strong>
-          </p>
-
-
-          <p>
-            Created:
-            {" "}
-            {formatDate(
-              selectedOrder
-                .created_at
-            )}
-          </p>
-
-
-          {selectedOrder
-            .reservation_expires_at && (
-
-            <p>
-              Reservation Expiry:
-              {" "}
-              {formatDate(
-                selectedOrder
-                  .reservation_expires_at
-              )}
-            </p>
-
-          )}
-
-
-          <h3>
-            Order Items
-          </h3>
-
-
-          {selectedOrder.items
-            ?.map(
-              (item) => (
-
-                <div
-                  key={
-                    item.product_id
-                  }
-                  className="order-item"
-                >
-
-                  <strong>
-                    {
-                      item.product_name
-                    }
-                  </strong>
-
-                  <span>
-                    Qty:
-                    {" "}
-                    {item.quantity}
-                  </span>
-
-                  <span>
-                    Rs.{" "}
-                    {item.subtotal}
-                  </span>
-
-                </div>
-
-              )
-            )}
-
-
-          <h3>
-            Payment
-          </h3>
-
-
-          {selectedOrder.payment ? (
-
-            <div className="payment-info">
-
-              <p>
-                Status:
-                {" "}
-
-                <strong>
-                  {
-                    selectedOrder
-                      .payment
-                      .status
-                  }
-                </strong>
-              </p>
-
-
-              <p>
-                Amount:
-                {" "}
-                Rs.{" "}
-                {
-                  selectedOrder
-                    .payment
-                    .amount
-                }
-              </p>
-
-            </div>
-
-          ) : (
-
-            <p>
-              No payment recorded.
-            </p>
-
-          )}
-
-
-          {canCancel(
-            selectedOrder.status
-          ) && (
-
-            <button
-              className="danger-btn"
-              onClick={() =>
-                cancelOrder(
-                  selectedOrder.id
-                )
-              }
-            >
-              Cancel Order
-            </button>
-
-          )}
-
-        </div>
-
-      )}
-
     </div>
-
   );
 }
 
